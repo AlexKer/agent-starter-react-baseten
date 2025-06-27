@@ -18,11 +18,11 @@ export default function ComponentsLayout({ children }: { children: React.ReactNo
   React.useEffect(() => {
     if (room.state === 'disconnected' && connectionDetails) {
       Promise.all([
-        room.localParticipant.setMicrophoneEnabled(true, undefined, {
-          preConnectBuffer: true,
-        }),
         room.connect(connectionDetails.serverUrl, connectionDetails.participantToken),
-      ]).catch((error) => {
+      ]).then(() => {
+        // Enable microphone after connection is established
+        return room.localParticipant.setMicrophoneEnabled(true);
+      }).catch((error) => {
         toastAlert({
           title: 'There was an error connecting to the agent',
           description: `${error.name}: ${error.message}`,

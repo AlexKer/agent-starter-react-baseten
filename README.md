@@ -1,38 +1,33 @@
 <img src="./.github/assets/app-icon.png" alt="Voice Assistant App Icon" width="100" height="100">
 
-# Web Voice Assistant
+# Voice Agent with RAG
 
-This is a starter template for [LiveKit Agents](https://docs.livekit.io/agents) that provides a simple voice interface using the [LiveKit JavaScript SDK](https://github.com/livekit/client-sdk-js). It supports [voice](https://docs.livekit.io/agents/start/voice-ai), [transcriptions](https://docs.livekit.io/agents/build/text/), and [virtual avatars](https://docs.livekit.io/agents/integrations/avatar).
+Voice agent, with the full context of your business, responding in real-time. Powered by Baseten inference, Livekit orchestration, and LlamaIndex RAG.
 
-This template is built with Next.js and is free for you to use or modify as you see fit.
-s
+This is a voice assistant built with [LiveKit Agents](https://docs.livekit.io/agents) that provides a [RAG](https://aws.amazon.com/what-is/retrieval-augmented-generation/) interface using [Baseten](https://baseten.co) inference endpoints. It supports voice interactions with access to custom documentation through vector search. 
+
+This application uses Baseten's DeepSeek models API for LLM, dedicated STT/TTS endpoints, and a local vector database for document retrieval. 
+
 ![App screenshot](/.github/assets/frontend-screenshot.jpeg)
+
+## Prerequisites
+
+Before getting started, you'll need:
+
+1. **Baseten Account**: Sign up at [baseten.co](https://baseten.co) and get your API key. You would need 2 dedicated employment endpoints (STT, TTS) and a deepseek models api endpoint.
+2. **LiveKit Account**: Sign up at [cloud.livekit.io](https://cloud.livekit.io) and get your API key, API secret, and Livekit URL.
+3. **Python 3.8+**: Ensure you have Python installed on your system
 
 ## Getting started
 
-> [!TIP]
-> If you'd like to try this application without modification, you can deploy an instance in just a few clicks with [LiveKit Cloud Sandbox](https://cloud.livekit.io/projects/p_/sandbox/templates/voice-assistant-frontend).
+1. Clone the repository
+2. `pip install -r requirements.txt`
+3. Replace the 4 endpoints in `baseten_rag_agent.py` with the appropriate endpoints from your Baseten account. You can use the same LLM for both RAG and part of the STT,LLM,TTS pipeline. The example uses Deepseek for both.
+4. Set api keys, see .env.example and create your own .env.local.
+5. Open scrape_docs and replace `BASE_URL` with your own docs that you want to perform RAG on. Then run `python scrape_docs.py` to scrape a set of live docs based on a sitemap. Alternatively, manaually fill the `data` folder with txt files.
+6. `pnpm dev` to launch the next js webapp, and visit http://localhost:3000 on your browser.
+7. `python baseten_rag.py dev` to connect the voice agent to livekit cloud room
+7. Click join call in the web app to join the same livekit cloud room as the voice agent.
+8. Start chatting in real-time!
 
-Run the following command to automatically clone this template.
-
-```bash
-lk app create --template voice-assistant-frontend
-```
-
-Then run the app with:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-And open http://localhost:3000 in your browser.
-
-You'll also need an agent to speak with. Try our [Voice AI Quickstart](https://docs.livekit.io/start/voice-ai) for the easiest way to get started.
-
-> [!NOTE]
-> If you need to modify the LiveKit project credentials used, you can edit `.env.local` (copy from `.env.example` if you don't have one) to suit your needs.
-
-## Contributing
-
-This template is open source and we welcome contributions! Please open a PR or issue through GitHub, and don't forget to join us in the [LiveKit Community Slack](https://livekit.io/join-slack)!
+Credits: this project is adapted from Recipes from Livekit, specifically, https://github.com/livekit-examples/agent-starter-react.

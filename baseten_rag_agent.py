@@ -65,8 +65,12 @@ async def query_info(query: str) -> str:
         is_chat_model=True,
     )
     
-    # Use the simple query_engine pattern
-    query_engine = index.as_query_engine(use_async=True, llm=baseten_deepseek)
+    # Use the simple query_engine pattern with custom system prompt
+    query_engine = index.as_query_engine(
+        use_async=True, 
+        llm=baseten_deepseek,
+        system_prompt="You are a helpful assistant. Answer questions based on the provided context. Respond in plain text only - no markdown, no emojis, no special formatting. Give direct, conversational answers that sound natural when spoken aloud."
+    )
     res = await query_engine.aquery(query)
     print("Query result:", res)
     return str(res)
@@ -81,7 +85,7 @@ async def entrypoint(ctx: agents.JobContext):
 
     # Create the agent with all components directly in the constructor
     agent = Agent(
-        instructions="You are a helpful voice AI assistant with access to documentation. Use the query_info tool to find relevant information when users ask questions.",
+        instructions="You are a helpful voice AI assistant with access to documentation. Use the query_info tool to find relevant information when users ask questions. IMPORTANT: Since you are a voice assistant, respond in plain text only - no markdown formatting, no emojis, no code blocks, no asterisks or special characters. Use simple, conversational language that sounds natural when spoken aloud.",
         tools=[query_info],
         vad=silero.VAD.load(),
         stt=baseten.STT(
@@ -89,7 +93,7 @@ async def entrypoint(ctx: agents.JobContext):
             model_endpoint="wss://model-4w5ljj7q.api.baseten.co/v1/websocket",  # Replace with your actual STT endpoint
         ),
         llm=openai.LLM(
-            api_key=baseten_api_key,  # type: ignore
+            api_key=baseten_api_key, 
             base_url="https://inference.baseten.co/v1",
             model="deepseek-ai/DeepSeek-V3-0324",
         ),
