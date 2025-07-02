@@ -111,7 +111,7 @@ async def entrypoint(ctx: agents.JobContext):
         vad=silero.VAD.load(),
         stt=baseten.STT(
             api_key=baseten_api_key,
-            model_endpoint="wss://model-8w6kke53.api.baseten.co/v1/websocket",  # Replace with your actual STT endpoint
+            model_endpoint="wss://model-4w5ljj7q.api.baseten.co/v1/websocket",  # Replace with your actual STT endpoint
         ),
         llm=openai.LLM(
             api_key=baseten_api_key, 
@@ -120,7 +120,7 @@ async def entrypoint(ctx: agents.JobContext):
         ),
         tts=baseten.TTS(
             api_key=baseten_api_key,
-            model_endpoint="https://model-6wg11gjw.api.baseten.co/environments/production/predict", # Replace with your TTS endpoint
+            model_endpoint="https://model-5qez6v2q.api.baseten.co/environments/production/predict", # Replace with your TTS endpoint
         ),
     )
 
