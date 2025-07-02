@@ -67,6 +67,8 @@ export function App({ appConfig }: AppProps) {
       Promise.all([
         room.connect(connectionDetails.serverUrl, connectionDetails.participantToken),
       ]).then(() => {
+        // Set participant metadata with RAG state
+        room.localParticipant.setMetadata(JSON.stringify({ ragEnabled }));
         // Enable microphone after connection is established
         return room.localParticipant.setMicrophoneEnabled(true);
       }).catch((error) => {
@@ -79,7 +81,7 @@ export function App({ appConfig }: AppProps) {
     return () => {
       room.disconnect();
     };
-  }, [room, sessionStarted, connectionDetails]);
+  }, [room, sessionStarted, connectionDetails, ragEnabled]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -101,6 +103,14 @@ export function App({ appConfig }: AppProps) {
         key="welcome"
         startButtonText={startButtonText}
         onStartCall={() => setSessionStarted(true)}
+        onFastDemo={() => {
+          setRagEnabled(false);
+          setSessionStarted(true);
+        }}
+        onSmartDemo={() => {
+          setRagEnabled(true);
+          setSessionStarted(true);
+        }}
         disabled={sessionStarted}
         initial={{ opacity: 0 }}
         animate={{ opacity: sessionStarted ? 0 : 1 }}

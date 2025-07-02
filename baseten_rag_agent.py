@@ -4,6 +4,7 @@ import os
 import ssl
 from pathlib import Path
 
+
 import aiohttp
 import certifi
 from dotenv import load_dotenv
@@ -83,14 +84,34 @@ async def entrypoint(ctx: agents.JobContext):
 
     await ctx.connect()
 
+    # Read participant metadata to determine RAG state
+    rag_enabled = True  # Default to True
+    try:
+        # Get the first participant (assuming there's only one user)
+        participants = list(ctx.room.participants.values())
+        if participants:
+            participant = participants[0]
+            if participant.metadata:
+                import json
+                metadata = json.loads(participant.metadata)
+                rag_enabled = metadata.get('ragEnabled', True)
+                print(f"RAG enabled: {rag_enabled}")
+    except Exception as e:
+        print(f"Error reading participant metadata: {e}")
+        rag_enabled = True  # Default to True on error
+
+    # Conditionally set tools based on RAG state
+    tools = [query_info] if rag_enabled else []
+    print(f"Using tools: {[tool.__name__ for tool in tools]}")
+
     # Create the agent with all components directly in the constructor
     agent = Agent(
         instructions="You are a helpful voice AI assistant with access to documentation. Use the query_info tool to find relevant information when users ask questions. IMPORTANT: Since you are a voice assistant, respond in plain text only - no markdown formatting, no emojis, no code blocks, no asterisks or special characters. Use simple, conversational language that sounds natural when spoken aloud.",
-        tools=[query_info],
+        tools=tools,
         vad=silero.VAD.load(),
         stt=baseten.STT(
             api_key=baseten_api_key,
-            model_endpoint="wss://model-4w5ljj7q.api.baseten.co/v1/websocket",  # Replace with your actual STT endpoint
+            model_endpoint="wss://model-8w6kke53.api.baseten.co/v1/websocket",  # Replace with your actual STT endpoint
         ),
         llm=openai.LLM(
             api_key=baseten_api_key, 
@@ -99,7 +120,7 @@ async def entrypoint(ctx: agents.JobContext):
         ),
         tts=baseten.TTS(
             api_key=baseten_api_key,
-            model_endpoint="https://model-5qez6v2q.api.baseten.co/environments/production/predict",  # Replace with your TTS endpoint
+            model_endpoint="https://model-6wg11gjw.api.baseten.co/environments/production/predict", # Replace with your TTS endpoint
         ),
     )
 

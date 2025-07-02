@@ -5,12 +5,16 @@ interface WelcomeProps {
   disabled: boolean;
   startButtonText: string;
   onStartCall: () => void;
+  onFastDemo: () => void;
+  onSmartDemo: () => void;
 }
 
 export const Welcome = ({
   disabled,
   startButtonText,
   onStartCall,
+  onFastDemo,
+  onSmartDemo,
   ref,
 }: React.ComponentProps<'div'> & WelcomeProps) => {
   return (
@@ -36,10 +40,10 @@ export const Welcome = ({
         .
       </p>
       <div className="mt-12 flex flex-col gap-4">
-        <Button variant="primary" size="lg" onClick={onStartCall} className="w-64 font-mono">
+        <Button variant="primary" size="lg" onClick={onFastDemo} className="w-64 font-mono">
           Start fast demo
         </Button>
-        <Button variant="primary" size="lg" onClick={onStartCall} className="w-64 font-mono">
+        <Button variant="primary" size="lg" onClick={onSmartDemo} className="w-64 font-mono">
           Start smart demo
         </Button>
       </div>
