@@ -35,9 +35,14 @@ export const Welcome = ({
         </a>
         .
       </p>
-      <Button variant="primary" size="lg" onClick={onStartCall} className="mt-12 w-64 font-mono">
-        {startButtonText}
-      </Button>
+      <div className="mt-12 flex flex-col gap-4">
+        <Button variant="primary" size="lg" onClick={onStartCall} className="w-64 font-mono">
+          Start fast demo
+        </Button>
+        <Button variant="primary" size="lg" onClick={onStartCall} className="w-64 font-mono">
+          Start smart demo
+        </Button>
+      </div>
     </div>
   );
 };
