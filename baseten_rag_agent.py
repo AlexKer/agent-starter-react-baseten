@@ -84,23 +84,7 @@ async def entrypoint(ctx: agents.JobContext):
 
     await ctx.connect()
 
-    # Read participant metadata to determine RAG state
-    rag_enabled = True  # Default to True
-    try:
-        # Get the first participant (assuming there's only one user)
-        participants = list(ctx.room.participants.values())
-        if participants:
-            participant = participants[0]
-            if participant.metadata:
-                import json
-                metadata = json.loads(participant.metadata)
-                rag_enabled = metadata.get('ragEnabled', True)
-                print(f"RAG enabled: {rag_enabled}")
-    except Exception as e:
-        print(f"Error reading participant metadata: {e}")
-        rag_enabled = True  # Default to True on error
-
-    # Conditionally set tools based on RAG state
+    rag_enabled = True
     tools = [query_info] if rag_enabled else []
     print(f"Using tools: {[tool.__name__ for tool in tools]}")
 
