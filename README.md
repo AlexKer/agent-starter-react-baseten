@@ -30,8 +30,8 @@ Create deployments of these models from the Baseten model library:
 ### Step 2: Set Up Repository and Install Dependencies
 
 ```bash
-git clone https://github.com/AlexKer/agent-starter-react-baseten.git **(NEEDS UPDATE)**
-cd agent-starter-react-baseten
+git clone https://github.com/basetenlabs/voice-agent-baseten.git
+cd voice-agent-baseten
 pip install -r requirements.txt
 pnpm install
 ```
