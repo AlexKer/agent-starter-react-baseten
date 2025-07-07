@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type ReceivedChatMessage } from '@livekit/components-react';
 import { AgentControlBar } from '@/components/livekit/agent-control-bar/agent-control-bar';
+import { BackendLogs } from '@/components/backend-logs';
 import { ChatEntry } from '@/components/livekit/chat/chat-entry';
 import { ChatMessageView } from '@/components/livekit/chat/chat-message-view';
 import { MediaTiles } from '@/components/livekit/media-tiles';
@@ -75,6 +76,8 @@ export const SessionView = ({
       </div>
 
       <MediaTiles chatOpen={chatOpen} />
+
+      <BackendLogs />
 
       <div className="bg-background fixed right-0 bottom-0 left-0 z-50 px-3 pt-2 pb-3 md:px-12 md:pb-12">
         <motion.div
