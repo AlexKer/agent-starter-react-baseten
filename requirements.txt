@@ -40,16 +40,9 @@ idna==3.10
 Jinja2==3.1.6
 jiter==0.10.0
 joblib==1.5.1
-livekit==1.0.11
-livekit-agents==1.1.4
-livekit-api==1.0.3
-livekit-plugins-baseten==1.1.4
-livekit-plugins-deepgram==1.1.4
+livekit-agents[openai,baseten,turn-detector]==1.1.5
 livekit-plugins-noise-cancellation==0.2.4
-livekit-plugins-openai==1.1.4
 livekit-plugins-silero==1.1.4
-livekit-plugins-turn-detector==1.1.4
-livekit-protocol==1.0.4
 llama-cloud==0.1.26
 llama-cloud-services==0.6.34
 llama-index==0.12.43
@@ -128,12 +121,3 @@ watchfiles==1.1.0
 websockets==15.0.1
 wrapt==1.17.2
 yarl==1.20.1
-
-
-# Enviroment variables needed to connect to the LiveKit server.
-LIVEKIT_API_KEY=<LIVEKIT_API_KEY>
-LIVEKIT_API_SECRET=<LIVEKIT_API_SECRET>
-LIVEKIT_URL=<LIVEKIT_URL>
-
-# Baseten required environment variables
-BASETEN_API_KEY=<BASETEN_API_KEY>
