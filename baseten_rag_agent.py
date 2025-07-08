@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import ssl
+import asyncio
 from pathlib import Path
 
 import aiohttp
@@ -33,6 +34,18 @@ baseten_api_key = os.getenv("BASETEN_API_KEY")
 if not baseten_api_key:
     raise ValueError("BASETEN_API_KEY environment variable is required")
 
+async def send_log(level: str, message: str):
+    """Send log to frontend API"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            await session.post(
+                "http://localhost:3000/api/logs",
+                json={"level": level, "message": message},
+                timeout=aiohttp.ClientTimeout(total=1)
+            )
+    except:
+        pass  # Silently fail if frontend is not available
+
 # check if storage already exists
 THIS_DIR = Path(__file__).parent
 PERSIST_DIR = THIS_DIR / "query-engine-storage"
@@ -58,6 +71,8 @@ else:
 async def query_info(query: str) -> str:
     """Get more information about a specific topic"""
     
+    await send_log("INFO", f"Processing query: {query[:50]}...")
+    
     # Set up the LLM with Baseten endpoint
     baseten_deepseek = OpenAILike(
         api_key=baseten_api_key,
@@ -73,20 +88,23 @@ async def query_info(query: str) -> str:
         system_prompt="You are a helpful assistant. Answer questions based on the provided context. Respond in plain text only - no markdown, no emojis, no special formatting. Give direct, conversational answers that sound natural when spoken aloud."
     )
     res = await query_engine.aquery(query)
+    await send_log("INFO", "Query completed successfully")
     print("Query result:", res)
     return str(res)
 
 async def entrypoint(ctx: agents.JobContext):
+    await send_log("INFO", "Starting voice agent...")
+    
     # Custom SSL context (you likely don't need this, something weird with my laptop)
     ssl_context = ssl.create_default_context(cafile=certifi.where())
     connector = aiohttp.TCPConnector(ssl=ssl_context)
 
     await ctx.connect()
+    await send_log("INFO", "Connected to LiveKit room")
     
     room = ctx.room
     
     # Wait a moment for user to join
-    import asyncio
     await asyncio.sleep(2)
 
     # Default RAG state
@@ -97,14 +115,18 @@ async def entrypoint(ctx: agents.JobContext):
         # Extract ragEnabled from metadata
         if participant.metadata and '"ragEnabled":true' in participant.metadata:
             rag_enabled = True
+            await send_log("INFO", f"Found ragEnabled=true for {participant.identity}")
             print(f"Found ragEnabled=true for {participant.identity}")
         elif participant.metadata and '"ragEnabled":false' in participant.metadata:
             rag_enabled = False
+            await send_log("INFO", f"Found ragEnabled=false for {participant.identity}")
             print(f"Found ragEnabled=false for {participant.identity}")
         else:
+            await send_log("INFO", f"No ragEnabled found, using default: {rag_enabled}")
             print(f"No ragEnabled found, using default: {rag_enabled}")
     
     tools = [query_info] if rag_enabled else []
+    await send_log("INFO", f"RAG enabled: {rag_enabled}, tools: {len(tools)}")
 
     # Create the agent with all components directly in the constructor
     agent = Agent(
@@ -128,8 +150,10 @@ async def entrypoint(ctx: agents.JobContext):
 
     session = AgentSession()
     await session.start(agent=agent, room=ctx.room)
+    await send_log("INFO", "Agent session started successfully")
 
     await session.say("Hey, how can I help you today?", allow_interruptions=True)
+    await send_log("INFO", "Agent ready for conversation")
 
 
 if __name__ == "__main__":
