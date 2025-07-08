@@ -67,9 +67,8 @@ export function App({ appConfig }: AppProps) {
       Promise.all([
         room.connect(connectionDetails.serverUrl, connectionDetails.participantToken),
       ]).then(() => {
-        // Set participant metadata with RAG state
-        room.localParticipant.setMetadata(JSON.stringify({ ragEnabled }));
-        // Enable microphone after connection is established
+        return room.localParticipant.setMetadata(JSON.stringify({ ragEnabled }));
+      }).then(() => {
         return room.localParticipant.setMicrophoneEnabled(true);
       }).catch((error) => {
         toastAlert({

@@ -4,7 +4,6 @@ import os
 import ssl
 from pathlib import Path
 
-
 import aiohttp
 import certifi
 from dotenv import load_dotenv
@@ -19,6 +18,7 @@ from llama_index.llms.openai_like import OpenAILike
 
 from livekit import agents
 from livekit.agents import Agent, AgentSession, RoomInputOptions, llm
+import livekit.rtc as rtc
 from livekit.plugins import (
     openai,
     noise_cancellation,
@@ -76,17 +76,39 @@ async def query_info(query: str) -> str:
     print("Query result:", res)
     return str(res)
 
-
 async def entrypoint(ctx: agents.JobContext):
     # Custom SSL context (you likely don't need this, something weird with my laptop)
     ssl_context = ssl.create_default_context(cafile=certifi.where())
     connector = aiohttp.TCPConnector(ssl=ssl_context)
 
     await ctx.connect()
+    
+    room = ctx.room
+    
+    # Wait a moment for user to join
+    import asyncio
+    await asyncio.sleep(2)
+    
+    for participant in room.remote_participants.values():
+        
+        # Extract ragEnabled from metadata
+        if participant.metadata and '"ragEnabled":true' in participant.metadata:
+            rag_enabled = True
+            print(f"Found ragEnabled=true for {participant.identity}")
+        elif participant.metadata in participant.metadata:
+            rag_enabled = False
+            print(f"Found ragEnabled=false for {participant.identity}")
+        else:
+            # rag_enabled = True  # default value
+            print(f"No ragEnabled found, using default: {rag_enabled}")
+    
+    # Get ragEnabled from token metadata
+    import json
 
-    rag_enabled = True
+    
+    print(f"rag_enabled?: {rag_enabled}")
     tools = [query_info] if rag_enabled else []
-    print(f"Using tools: {[tool.__name__ for tool in tools]}")
+    print(f"tools: {tools}")
 
     # Create the agent with all components directly in the constructor
     agent = Agent(
