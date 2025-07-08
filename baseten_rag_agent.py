@@ -88,6 +88,9 @@ async def entrypoint(ctx: agents.JobContext):
     # Wait a moment for user to join
     import asyncio
     await asyncio.sleep(2)
+
+    # Default RAG state
+    rag_enabled = True
     
     for participant in room.remote_participants.values():
         
@@ -95,16 +98,12 @@ async def entrypoint(ctx: agents.JobContext):
         if participant.metadata and '"ragEnabled":true' in participant.metadata:
             rag_enabled = True
             print(f"Found ragEnabled=true for {participant.identity}")
-        elif participant.metadata in participant.metadata:
+        elif participant.metadata and '"ragEnabled":false' in participant.metadata:
             rag_enabled = False
             print(f"Found ragEnabled=false for {participant.identity}")
         else:
-            # rag_enabled = True  # default value
             print(f"No ragEnabled found, using default: {rag_enabled}")
     
-    # Get ragEnabled from token metadata
-    import json
-
     
     print(f"rag_enabled?: {rag_enabled}")
     tools = [query_info] if rag_enabled else []
