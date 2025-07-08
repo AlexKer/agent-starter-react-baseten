@@ -104,10 +104,7 @@ async def entrypoint(ctx: agents.JobContext):
         else:
             print(f"No ragEnabled found, using default: {rag_enabled}")
     
-    
-    print(f"rag_enabled?: {rag_enabled}")
     tools = [query_info] if rag_enabled else []
-    print(f"tools: {tools}")
 
     # Create the agent with all components directly in the constructor
     agent = Agent(
