@@ -20,7 +20,7 @@ interface AppProps {
 
 export function App({ appConfig }: AppProps) {
   const [sessionStarted, setSessionStarted] = React.useState(false);
-  const [ragEnabled, setRagEnabled] = React.useState(true); // RAG toggle state
+  const [ragEnabled, setRagEnabled] = React.useState(true);
   const { suportsChatInput, suportsVideoInput, suportsScreenShare, startButtonText } = appConfig;
 
   const capabilities = {
@@ -32,17 +32,6 @@ export function App({ appConfig }: AppProps) {
   const connectionDetails = useConnectionDetails();
 
   const room = React.useMemo(() => new Room(), []);
-
-  // useEffect to handle RAG toggling
-  React.useEffect(() => {
-    if (ragEnabled) {
-      console.log('RAG enabled - loading documentation tools');
-      // You could load embeddings, set up tools, etc.
-    } else {
-      console.log('RAG disabled - removing documentation tools');
-      // You could clear context, remove tools, etc.
-    }
-  }, [ragEnabled]);
 
   React.useEffect(() => {
     const onDisconnected = () => {
@@ -84,20 +73,6 @@ export function App({ appConfig }: AppProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b px-4 py-2">
-        <h1 className="text-lg font-semibold">Voice Assistant</h1>
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={ragEnabled}
-              onChange={(e) => setRagEnabled(e.target.checked)}
-              className="rounded"
-            />
-            RAG Enabled
-          </label>
-        </div>
-      </header>
       <MotionWelcome
         key="welcome"
         startButtonText={startButtonText}
